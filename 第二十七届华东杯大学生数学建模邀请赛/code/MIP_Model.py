@@ -200,12 +200,23 @@ def cloth_mip(hours_per_day, days_per_week, weeks, N, R, skill_matrix, e, f, L, 
     
     # 收集培训方案
     training_data = []
-    for i in range(num_levels-1):
-        training_data.append([f"技工{i+1}级提升到{i+2}级", int(y[i].value()), c[i], int(y[i].value() * c[i])])
-    
+    total_training_cost = 0
+
+    for i in range(num_levels - 1):  # 1级到4级技工提升
+        trained_workers = int(y[i].value())
+        cost_per_worker = c[i]
+        total_cost = trained_workers * cost_per_worker
+        total_training_cost += total_cost
+
+        training_data.append([
+            f"技工{i+1}级提升到{i+2}级", 
+            trained_workers, 
+            cost_per_worker, 
+            total_cost
+        ])
+
     training_df = pd.DataFrame(training_data, 
                 columns=["培训类型", "培训人数", "单位培训费用(元)", "总培训费用(元)"])
-    total_training_cost = sum(y[i].value() * c[i] for i in range(num_levels-1))
     results['training'] = training_df
     results['total_training_cost'] = total_training_cost
     
@@ -214,20 +225,21 @@ def cloth_mip(hours_per_day, days_per_week, weeks, N, R, skill_matrix, e, f, L, 
     
     # 输出结果
     print("\n产能和利润信息:")
-    capacity_df.to_excel('excel/产能和利润信息.xlsx', index=False)
-    print('已经保存到 - excel/产能和利润信息.xlsx')
+    capacity_df.to_excel('data/产能和利润信息.xlsx', index=False)
+    print('已经保存到 - data/产能和利润信息.xlsx')
     
     print("\n工人分配方案:")
-    assignment_df.to_excel('excel/工人分配方案.xlsx', index=False)
-    print('已经保存到 - excel/工人分配方案.xlsx')
+    assignment_df.to_excel('data/工人分配方案.xlsx', index=False)
+    print('已经保存到 - data/工人分配方案.xlsx')
     
     print("\n各工序故障损失:")
-    fault_df.to_excel('excel/各工序故障损失.xlsx', index=False)
-    print('已经保存到 - excel/各工序故障损失.xlsx')
+    fault_df.to_excel('data/各工序故障损失.xlsx', index=False)
+    print('已经保存到 - data/各工序故障损失.xlsx')
 
     print("\n培训方案:")
-    training_df.to_excel('excel/培训方案.xlsx', index=False)
-    print('已经保存到 - excel/培训方案.xlsx')
+    print(f"总培训费用: {total_training_cost:.2f} 元")
+    training_df.to_excel('data/培训方案.xlsx', index=False)
+    print('已经保存到 - data/培训方案.xlsx')
 
 
     print(f"\n{weeks}周期间:")
