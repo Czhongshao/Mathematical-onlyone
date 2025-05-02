@@ -51,15 +51,15 @@ def plot1_capacity_bar(df):
 
 def plot2_fault_pie(df):
     plt.figure(figsize=(10, 8))
-    explode = [0.1 if i == df['总损失金额(元)'].astype(float).idxmax() else 0 for i in range(len(df))]
+    # explode = [0.1 if i == df['总损失金额(元)'].astype(float).idxmax() else 0 for i in range(len(df))]
     plt.pie(df['总损失金额(元)'].astype(float), 
             labels=df['工序'], 
             autopct='%1.1f%%',
             startangle=90, 
-            explode=explode,
+            # explode=explode,
             colors=COLORS,
             shadow=False,
-            textprops={'fontsize': 12})
+            textprops={'fontsize': 18})
     # plt.title('各工序故障损失占比', fontsize=18)
     plt.axis('equal')
     plt.tight_layout()
@@ -68,11 +68,20 @@ def plot2_fault_pie(df):
 
 def plot3_worker_heatmap(df):
     plt.figure(figsize=(10, 8))
-    custom_cmap = plt.cm.colors.LinearSegmentedColormap.from_list("custom_blue_cmap", [COLORS[1], COLORS[4]], N=256)
-    sns.heatmap(df.set_index('技工等级'), annot=True, cmap=custom_cmap, fmt='d', linewidths=.5, cbar_kws={'label': '人数'})
+    custom_cmap = plt.cm.colors.LinearSegmentedColormap.from_list("custom_blue_cmap", [COLORS[1], COLORS[0]], N=256)
+    # 增加annot_kws参数设置注释文字大小，增加cbar_kws中标签字体大小
+    ax = sns.heatmap(df.set_index('技工等级'), annot=True, cmap=custom_cmap, fmt='d', 
+                 linewidths=.5, annot_kws={"size": 16}, 
+                 cbar_kws={'label': '人数'})
+    # 去除左侧技工等级标签
+    ax.set_ylabel('')
+    # 设置colorbar的标签大小
+    cbar = ax.collections[0].colorbar
+    cbar.ax.set_ylabel('人数', fontsize=16)
+    cbar.ax.tick_params(labelsize=14)
     # plt.title('工人分配方案热力图', fontsize=18)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     plt.tight_layout()
     plt.savefig('img/q1_工人分配方案热力图.png', dpi=300)
     plt.close()
@@ -121,15 +130,17 @@ def plot3_worker_heatmap(df):
 
 def plot6_combo(df1, df2):
     fig, ax1 = plt.subplots(figsize=(12, 7))
-    ax1.set_xlabel('工序', fontsize=14)
-    ax1.set_ylabel('单线日产能(件/天)', color=COLORS[0], fontsize=14)
+    ax1.set_xlabel('工序', fontsize=16)
+    ax1.set_ylabel('单线日产能(件/天)', color=COLORS[0], fontsize=16)
     ax1.bar(df1['工序'], df1['单线日产能(件/天)'].astype(float), color=COLORS[0], alpha=0.7, label='单线日产能')
-    ax1.tick_params(axis='y', labelcolor=COLORS[0])
+    # 轴体字体大小
+    ax1.tick_params(axis='y', labelcolor=COLORS[0], labelsize=14)
+    ax1.tick_params(axis='x', labelsize=14)
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('故障损失金额(元)', color=COLORS[4], fontsize=14)
+    ax2.set_ylabel('故障损失金额(元)', color=COLORS[4], fontsize=16)
     ax2.plot(df2['工序'], df2['总损失金额(元)'].astype(float), 'o-', color=COLORS[4], linewidth=2, label='故障损失金额')
-    ax2.tick_params(axis='y', labelcolor=COLORS[4])
+    ax2.tick_params(axis='y', labelcolor=COLORS[4], labelsize=14)
 
     for i, txt in enumerate(df2['平均故障率(次/小时)']):
         ax2.annotate(f'故障率: {float(txt)*100:.1f} %', 
@@ -137,13 +148,13 @@ def plot6_combo(df1, df2):
                     xytext=(0, 10),
                     textcoords='offset points',
                     ha='center',
-                    fontsize=9)
+                    fontsize=14)
 
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=12)
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=14)
 
-    plt.title('各工序产能与故障损失关系', fontsize=18)
+    # plt.title('各工序产能与故障损失关系', fontsize=18)
     plt.tight_layout()
     plt.savefig('img/q1_各工序产能与故障损失关系.png', dpi=300)
     plt.close()
