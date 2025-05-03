@@ -86,27 +86,53 @@ def plot3_worker_heatmap(df):
     plt.savefig('img/q1_工人分配方案热力图.png', dpi=300)
     plt.close()
 
-# def plot4_fault_scatter(df):
-#     plt.figure(figsize=(10, 6))
-#     scatter = plt.scatter(df['平均故障率(次/小时)'].astype(float), 
-#                df['工人数'].astype(int), 
-#                s=df['总损失金额(元)'].astype(float)/500,
-#                alpha=0.7, c=range(len(df)), cmap='viridis')
-
-#     for i, txt in enumerate(df['工序']):
-#         plt.annotate(txt, 
-#                     (float(df.iloc[i]['平均故障率(次/小时)']), int(df.iloc[i]['工人数'])),
-#                     xytext=(5, 5), textcoords='offset points', fontsize=10)
-
-#     plt.title('故障率与工人数量的关系', fontsize=18)
-#     plt.xlabel('平均故障率(次/小时)', fontsize=14)
-#     plt.ylabel('工人数（人）', fontsize=14)
-#     plt.grid(True, linestyle='--', alpha=0.7)
-#     cbar = plt.colorbar(scatter)
-#     cbar.set_label('工序索引', fontsize=12)
-#     plt.tight_layout()
-#     plt.savefig('img/q1_故障率与工人数量关系.png', dpi=300)
-#     plt.close()
+def plot4_capacity_bar(df):
+    fig, ax1 = plt.subplots(figsize=(12, 7))
+    ax1.set_xlabel('工序', fontsize=16)
+    ax1.set_ylabel('总故障次数', color=COLORS[1], fontsize=16)
+    bars = ax1.bar(df['工序'], df['总故障次数'], color=COLORS[1], alpha=0.7, label='总故障次数')
+    
+    # 轴体字体大小
+    ax1.tick_params(axis='y', labelcolor=COLORS[1], labelsize=14)
+    ax1.tick_params(axis='x', labelsize=14)
+    
+    # 在柱状图上添加数值标签
+    for bar in bars:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 5,
+                 f'{height:.1f}', ha='center', va='bottom', fontsize=14)
+    
+    # 突出显示最大值
+    max_capacity_idx = df['总故障次数'].astype(float).idxmax()
+    bars[max_capacity_idx].set_color(COLORS[4]) # 深蓝色
+    
+    # 创建一个用于图例的假柱状图对象，表示最大值
+    max_bar = plt.Rectangle((0,0),1,1, color=COLORS[4], alpha=0.7, label='最大故障次数')
+    
+    # 添加右侧轴显示单次损失金额
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('单次损失金额(元)', color=COLORS[2], fontsize=16)  # 更新为橙色
+    ax2.plot(df['工序'], df['单次损失(元)'], 'o-', color=COLORS[2], linewidth=2, label='单次损失金额')  # 更新为橙色
+    ax2.tick_params(axis='y', labelcolor=COLORS[2], labelsize=14)  # 更新为橙色
+    
+    # 在折线图点上标注平均故障率
+    for i, txt in enumerate(df['平均故障率(次/小时)']):
+        ax2.annotate(f'故障率: {float(txt)*100:.1f}%', 
+                    xy=(i, float(df.iloc[i]['单次损失(元)'])),
+                    xytext=(0, 10),
+                    textcoords='offset points',
+                    ha='center',
+                    fontsize=14)
+    
+    # 添加图例
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend([bars[0], max_bar] + lines2, ['总故障次数', '最大故障次数', '单次损失金额'], 
+               loc='upper right', fontsize=14)
+    
+    plt.tight_layout()
+    plt.savefig('img/q1_故障次数与单次损失关系.png', dpi=300)
+    plt.close()
 
 # def plot5_training_bar(df):
 #     if df['培训人数'].astype(int).sum() == 0:
@@ -163,6 +189,6 @@ def plot6_combo(df1, df2):
 plot1_capacity_bar(df1)
 plot2_fault_pie(df2)
 plot3_worker_heatmap(df3)
-# plot4_fault_scatter(df2)
+plot4_capacity_bar(df2)
 # plot5_training_bar(df4)
 plot6_combo(df1, df2)
