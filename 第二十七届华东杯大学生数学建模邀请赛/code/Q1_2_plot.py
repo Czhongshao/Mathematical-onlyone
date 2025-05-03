@@ -46,7 +46,7 @@ def plot1_capacity_bar(df):
     min_capacity_idx = df['单线日产能(件/天)'].astype(float).idxmin()
     bars[min_capacity_idx].set_color(COLORS[4])
     plt.tight_layout()
-    plt.savefig('img/q1_各工序产能对比.png', dpi=300)
+    plt.savefig('img/q2_各工序产能对比.png', dpi=300)
     plt.close()
 
 def plot2_fault_pie(df):
@@ -182,7 +182,7 @@ def plot6_combo(df1, df2):
 
     # plt.title('各工序产能与故障损失关系', fontsize=18)
     plt.tight_layout()
-    plt.savefig('img/q1_各工序产能与故障损失关系.png', dpi=300)
+    plt.savefig('img/q2_各工序产能与故障损失关系.png', dpi=300)
     plt.close()
 
 # 调用函数绘图
