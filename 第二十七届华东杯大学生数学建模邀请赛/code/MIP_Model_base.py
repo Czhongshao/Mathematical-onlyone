@@ -1,31 +1,10 @@
 import pulp
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['SimHei'] # 用来正常显示中文标签
-plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 
 def cloth_mip(hours_per_day, days_per_week, weeks, N, R, skill_matrix, e, f, L, T_repair, p, c, num_lines):
     """
     混合整数规划模型
-    
-    参数:
-    hours_per_day: 每天工作小时数
-    days_per_week: 每周工作天数
-    weeks: 总工作周数
-    N: 各级技工人数
-    R: 各工序所需人数
-    skill_matrix: 技能匹配
-    e: 效率
-    f: 故障率
-    L: 各工序单次故障损失
-    T_repair: 各工序故障排除时间
-    p: 每件产品利润
-    c: 培训费用
-    num_lines: 流水线数量
-    
-    返回:
-    求解结果字典
     """
     
     # 计算总工作时间
